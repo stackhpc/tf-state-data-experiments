@@ -1,4 +1,14 @@
-resource "terraform_data" "seed" {
+variable "k3s_token" {
+    default = null
+}
+
+resource "terraform_data" "k3s_token" {
+    input = var.k3s_token
+    lifecycle {
+        ignore_changes = [
+            input,
+        ]
+    }   
 }
 
 resource "openstack_compute_instance_v2" "basic" {
@@ -9,7 +19,7 @@ resource "openstack_compute_instance_v2" "basic" {
   security_groups = ["default"]
 
   metadata = {
-    k3s_token = terraform_data.seed.id # e.g. 9e478484-1e3b-633b-ea56-68deb67638a2
+    k3s_token = terraform_data.k3s_token.input
   }
 
   network {
